@@ -1,55 +1,71 @@
-import React from 'react';
-import './Screen.css';
-import { Link, useLocation } from 'react-router-dom';
-import icon from '../assets/White-Logo.png'; // adjust this path
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-const Result = () => {
-  const location = useLocation();
-  const { images = [], results = [] } = location.state || {};
+function ResultPage() {
+  const { state } = useLocation();
+  const { images, results } = state || { images: [], results: [] };
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!images || images.length === 0) {
+      navigate('/'); // Redirect back to home if no images found
+    }
+  }, [images, navigate]);
+
+  // Navigate to the first or previous image
+  const handlePrevImage = () => {
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
+  };
+
+  // Navigate to the next image
+  const handleNextImage = () => {
+    if (currentImageIndex < images.length - 1) {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+
+  // Button to allow user to upload a new image
+  const handleNewUpload = () => {
+    navigate('/'); // Navigate back to the upload page
+  };
 
   return (
-    <div className="result-page">
-      <nav className="navbar">
-        <div className="navbar-logo">
-          <img src={icon} alt="Logo" />
-          <span style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>Lofu</span>
-        </div>
-        <ul className="navbar-links">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/result">Result</Link></li>
-        </ul>
-      </nav>
-
-      <div className="result-content">
-        <h2>Classification Results</h2>
-        <div className="slot-row">
-          {images.length > 0 ? (
-            images.map((res, idx) => (
-              <div className="image-slot-placeholder" key={idx}>
-                {res.image ? (
-                  <div>
-                    <img src={res.image} alt={`Captured ${idx + 1}`} style={{ width: '100%' }} />
-                    <p>
-                      <strong>{res.label}</strong>
-                      {res.confidence !== null && (
-                        <span style={{ marginLeft: '8px', fontSize: '0.9rem' }}>
-                          ({(res.confidence * 100).toFixed(1)}%)
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="placeholder">No Image</div>
-                )}
-              </div>
-            ))
+    <div className="results-page">
+      {images.length > 0 && (
+        <div className="result-item">
+          <img
+            src={images[currentImageIndex]}
+            alt={`Captured ${currentImageIndex}`}
+            className="result-image"
+          />
+          {results[currentImageIndex] ? (
+            <>
+              <p><strong>Prediction:</strong> {results[currentImageIndex]}</p>
+            </>
           ) : (
-            <p>No results to display.</p>
+            <p>Loading...</p>
           )}
         </div>
+      )}
+
+      <div className="navigation-buttons">
+        <button onClick={handlePrevImage} disabled={currentImageIndex === 0}>
+          Previous
+        </button>
+        <button onClick={handleNextImage} disabled={currentImageIndex === images.length - 1}>
+          Next
+        </button>
+      </div>
+
+      {/* Button to upload another image */}
+      <div className="new-upload-btn-container">
+        <button onClick={handleNewUpload}>Upload Another Image</button>
       </div>
     </div>
   );
-};
+}
 
-export default Result;
+export default ResultPage;
