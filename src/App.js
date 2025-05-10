@@ -22,8 +22,8 @@ function App() {
     async function setupCamera() {
       const constraints = {
         video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1980 },
+          height: { ideal: 1080 },
           aspectRatio: { ideal: 16 / 9 },
           facingMode: 'environment',
         },
