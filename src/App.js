@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import icon from './assets/White-Logo.png';
 import './App.css';
 import WelcomeModal from './components/WelcomeM';
 import MainButton from './components/MainButton';
-import { supabase } from './supabaseclient';
+import { supabase } from './supabaseclient'; // You imported it but not used; kept here if you plan to use.
 
 function App() {
   const [showModal, setShowModal] = useState(true);
@@ -18,24 +18,29 @@ function App() {
 
   useEffect(() => {
     let stream;
-    const constraints = {
-      video: {
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        aspectRatio: { ideal: 16 / 9 },
-        facingMode: "environment",
-      }
-    };
 
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then((s) => {
-        stream = s;
+    async function setupCamera() {
+      const constraints = {
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          aspectRatio: { ideal: 16 / 9 },
+          facingMode: 'environment',
+        },
+      };
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
         if (videoRef.current) {
-          videoRef.current.srcObject = s;
+          videoRef.current.srcObject = stream;
           videoRef.current.play();
         }
-      })
-      .catch((err) => console.error('Camera error:', err));
+      } catch (err) {
+        console.error('Camera error:', err);
+      }
+    }
+
+    setupCamera();
 
     return () => {
       if (stream) {
@@ -53,18 +58,17 @@ function App() {
       if (video && canvas && video.videoWidth > 0 && video.videoHeight > 0) {
         overlayCanvas.width = video.videoWidth;
         overlayCanvas.height = video.videoHeight;
-        const ctx = overlayCanvas.getContext('2d');
 
-        // Clear the canvas before drawing new bounding boxes
-        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+        const ctxOverlay = overlayCanvas.getContext('2d');
+        ctxOverlay.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-        // Draw the video frame to the canvas
+        const ctxCapture = canvas.getContext('2d');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        const ctxVideo = canvas.getContext('2d');
-        ctxVideo.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctxCapture.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = canvas.toDataURL('image/png');
+
         try {
           const res = await fetch('http://127.0.0.1:5000/detect', {
             method: 'POST',
@@ -73,7 +77,8 @@ function App() {
           });
 
           const data = await res.json();
-          console.log("Detection data received:", data); // Debugging log
+          console.log("Detection data received:", data);
+
           if (Array.isArray(data)) {
             setDetections(data);
           } else {
@@ -87,23 +92,21 @@ function App() {
       }
     };
 
-    const interval = setInterval(detect, 1000); // Detect every second
+    const interval = setInterval(detect, 1000); // every second
     return () => clearInterval(interval);
-  }, [detections]);
+  }, []);
 
   useEffect(() => {
     const canvas = overlayRef.current;
     const ctx = canvas?.getContext('2d');
 
     if (canvas && ctx && detections.length) {
-      // Clear the canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = 'lime';
       ctx.lineWidth = 2;
       ctx.font = '16px sans-serif';
       ctx.fillStyle = 'lime';
 
-      // Draw bounding boxes on canvas
       detections.forEach(({ x1, y1, x2, y2, class: className }) => {
         ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
         ctx.fillText(className || '', x1, y1 - 5);
@@ -115,7 +118,6 @@ function App() {
     const video = videoRef.current;
     if (!video || !video.videoWidth || !video.videoHeight) return;
 
-    const canvas = document.createElement('canvas');
     const videoCanvas = document.createElement('canvas');
     videoCanvas.width = video.videoWidth;
     videoCanvas.height = video.videoHeight;
@@ -125,15 +127,16 @@ function App() {
     const crops = (detections || []).map(({ x1, y1, x2, y2 }) => {
       const width = x2 - x1;
       const height = y2 - y1;
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoCanvas, x1, y1, width, height, 0, 0, width, height);
-      return canvas.toDataURL('image/png'); // Capture as base64
+      const cropCanvas = document.createElement('canvas');
+      cropCanvas.width = width;
+      cropCanvas.height = height;
+      const cropCtx = cropCanvas.getContext('2d');
+      cropCtx.drawImage(videoCanvas, x1, y1, width, height, 0, 0, width, height);
+      return cropCanvas.toDataURL('image/png');
     });
 
-    setCapturedImages(crops); // Set captured images
-    setClassResults([]); // Reset previous results
+    setCapturedImages(crops);
+    setClassResults([]);
   };
 
   const handleClassify = async () => {
@@ -144,7 +147,7 @@ function App() {
 
     try {
       const results = [];
-      for (let img of capturedImages) {
+      for (const img of capturedImages) {
         const res = await fetch('http://127.0.0.1:5000/classify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -156,8 +159,8 @@ function App() {
         results.push(prediction);
       }
 
-      setClassResults(results); // Save classification results
-      navigate('/result', { state: { images: capturedImages, results } }); // Navigate to result page
+      setClassResults(results);
+      navigate('/result', { state: { images: capturedImages, results } });
     } catch (err) {
       console.error('Classification error:', err);
       alert('Classification failed. Please try again.');
@@ -188,11 +191,16 @@ function App() {
               {capturedImages[i] ? (
                 <>
                   <img src={capturedImages[i]} alt={`Capture ${i + 1}`} />
-                  <button className="delete-btn" onClick={() => {
-                    const newImgs = [...capturedImages];
-                    newImgs.splice(i, 1);
-                    setCapturedImages(newImgs);
-                  }}>✖</button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => {
+                      const newImgs = [...capturedImages];
+                      newImgs.splice(i, 1);
+                      setCapturedImages(newImgs);
+                    }}
+                  >
+                    ✖
+                  </button>
                 </>
               ) : (
                 <span className="placeholder">Empty Slot</span>
