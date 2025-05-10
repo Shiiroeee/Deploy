@@ -84,9 +84,9 @@ body {
 .camera-feed {
   width: 100%;
   height: auto;
-  max-width: 1900px; /* Increased from 1200px to 1600px */
-  aspect-ratio: 13 / 10;
-  object-fit: cover;
+  max-width: 1280px;
+  aspect-ratio: 16 / 9; /* standard HD video */
+  object-fit: contain;  /* contain video fully inside without cropping */
   border: 3px solid #00bcd4;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 188, 212, 0.7);

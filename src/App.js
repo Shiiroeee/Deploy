@@ -18,10 +18,22 @@ function App() {
 
   useEffect(() => {
     let stream;
-    navigator.mediaDevices.getUserMedia({ video: true })
+    const constraints = {
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        aspectRatio: { ideal: 16 / 9 },
+        facingMode: "environment",
+      }
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints)
       .then((s) => {
         stream = s;
-        videoRef.current.srcObject = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.play();
+        }
       })
       .catch((err) => console.error('Camera error:', err));
 
