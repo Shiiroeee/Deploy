@@ -77,3 +77,11 @@
 .return-home-btn:hover {
     background-color: #019875;
 }
+
+.navbar-title {
+  flex-grow: 1;      /* Take remaining space */
+  text-align: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}

@@ -1,68 +1,66 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import icon from '../assets/White-Logo.png';
+import '../App.css';
+import './Screen.css';
+import MainButton from './MainButton';
 
 function ResultPage() {
-  const { state } = useLocation();
-  const { images, results } = state || { images: [], results: [] };
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const location = useLocation();
   const navigate = useNavigate();
+  const { images = [], results = [] } = location.state || {};
 
-  useEffect(() => {
-    if (!images || images.length === 0) {
-      navigate('/'); // Redirect back to home if no images found
+  const handleBack = () => navigate('/');
+
+  const formatArchLabel = (label) => {
+    switch (label) {
+      case 'Flat':
+        return 'Flat Arch';
+      case 'Normal':
+        return 'Normal Arch';
+      case 'High':
+        return 'High Arch';
+      default:
+        return label;
     }
-  }, [images, navigate]);
-
-  // Navigate to the first or previous image
-  const handlePrevImage = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    }
-  };
-
-  // Navigate to the next image
-  const handleNextImage = () => {
-    if (currentImageIndex < images.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    }
-  };
-
-  // Button to allow user to upload a new image
-  const handleNewUpload = () => {
-    navigate('/'); // Navigate back to the upload page
   };
 
   return (
-    <div className="results-page">
-      {images.length > 0 && (
-        <div className="result-item">
-          <img
-            src={images[currentImageIndex]}
-            alt={`Captured ${currentImageIndex}`}
-            className="result-image"
-          />
-          {results[currentImageIndex] ? (
-            <>
-              <p><strong>Prediction:</strong> {results[currentImageIndex]}</p>
-            </>
-          ) : (
-            <p>Loading...</p>
-          )}
+    <div className="App">
+      <nav className="navbar">
+        <div className="navbar-logo">
+          <img src={icon} alt="Logo" />
+          <span>Lofu</span>
         </div>
-      )}
 
-      <div className="navigation-buttons">
-        <button onClick={handlePrevImage} disabled={currentImageIndex === 0}>
-          Previous
-        </button>
-        <button onClick={handleNextImage} disabled={currentImageIndex === images.length - 1}>
-          Next
-        </button>
-      </div>
+        {/* Move the classification result header here */}
+        <div className="navbar-title">
+          <h3>Classification Results</h3>
+        </div>
 
-      {/* Button to upload another image */}
-      <div className="new-upload-btn-container">
-        <button onClick={handleNewUpload}>Upload Another Image</button>
+        <ul className="navbar-links">
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/result">Result</Link></li>
+          <li><Link to="/recommended">Recommended</Link></li>
+          <li><Link to="/information">Information</Link></li>
+        </ul>
+      </nav>
+
+      <div className="result-body">
+        {images.map((img, index) => (
+          <div className="result-card" key={index}>
+            <img src={img} alt={`Result ${index}`} className="result-image" />
+            <div className="prediction-details">
+              <h3>
+                Prediction: <span>{formatArchLabel(results[index])}</span>
+              </h3>
+            </div>
+          </div>
+        ))}
+
+        <div className="result-actions">
+          <MainButton onClick={handleBack}>Back to Home</MainButton>
+        </div>
       </div>
     </div>
   );
