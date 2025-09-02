@@ -1,0 +1,173 @@
+.info-container h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0b3d91; 
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Press Start 2P', cursive; 
+  text-shadow: 2px 2px #9fffcb; 
+  letter-spacing: 1px;
+  line-height: 1.3;
+}
+
+.info-body {
+  padding: 2rem;
+}
+
+.info-title {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #00695c;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.modal-box-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.modal-box {
+  background-color: #e0f7fa;
+  padding: 1.5rem;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.modal-box h3 {
+  margin-bottom: 0.5rem;
+  color: #0b3d91;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 500px;
+  text-align: center;
+  color: #333;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  font-size: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content p {
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.modal-content a {
+  color: #00695c; 
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 2px;
+}
+
+.modal-content a:hover {
+  text-decoration: underline;
+}
+
+.close-btn {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #007c6f;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #005f54;
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 2.3rem;
+  font-weight: bold;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s ease;
+}
+
+.modal-close-icon:hover {
+  color: #ff4b5c;
+}
+
+/* Symptom Box Styling */
+.symptom-box {
+  background-color: #f0fdf4;
+  border-radius: 20px;
+  margin-top: 3rem;
+  padding: 2rem 2.5rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', sans-serif;
+  text-align: left;
+}
+
+.symptom-box h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #1c3b70;
+}
+
+.symptom-box ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.symptom-box li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.more-link {
+  color: #0d47a1;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.more-link:hover {
+  text-decoration: underline;
+}
+
+.bold-text {
+  font-weight: bold;
+  color: #004d40; 
+}
