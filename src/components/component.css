@@ -1,173 +1,151 @@
-/* ========== Welcome Modal ========== */
+/* Welcome Modal */
+
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  width: 100vw; height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 9999;
-  transition: opacity 0.5s ease;
-  opacity: 1;
-}
-.modal-overlay.fade-out { opacity: 0; pointer-events: none; }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(8px);           
+    -webkit-backdrop-filter: blur(8px);   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    transition: opacity 0.5s ease;
+    opacity: 1;
+  }
+  
+  .modal-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .modal {
+    background-color: #1e1e1e;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: justify;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    color: #fff;
+    max-width: 400px;
+    width: 90%;
+    transition: transform 0.4s ease;
+    transform: scale(1);
+  }
+  
+  .modal-overlay.fade-out .modal {
+    transform: scale(0.95);
+  }
+  
+  /* Welcome Button */
 
-.modal {
-  background-color: #1e1e1e;
-  padding: 50px;
-  border-radius: 16px;
-  text-align: justify;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.08);
-  color: #fff;
-  max-width: 720px; width: 92%;
-  transition: transform 0.4s ease;
-  transform: scale(1);
-  font-size: 1.3rem; line-height: 1.9rem;
+  .button-container-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+  
+  .custom-btn {
+    padding: 10px 20px;
+    background-color: #2c5c8d;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    
+  }
+  
+  .custom-btn.clicked {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+  }
+  
+  /* Main Button */
 
-  /* make long content scroll inside the modal (page is non-scroll) */
-  max-height: min(85vh, 900px);
-  overflow: auto;
-}
-@supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
-  .modal-overlay { background-color: rgba(0, 0, 0, 0.6); }
-}
-
-.modal-header {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 0.75rem; margin-bottom: 1rem;
-}
-.modal-logo { width: 140px; height: auto; }
-.modal h2 {
-  font-size: 2.2rem; text-align: center; margin: 0 0 .25rem 0;
-  font-weight: 800; color: #4facfe; letter-spacing: .3px;
-  text-shadow: 0 2px 12px rgba(79, 172, 254, 0.2);
-}
-.modal p,
-.modal .modal-body-text {
-  font-size: 1.2rem; line-height: 1.95rem; margin-top: .75rem; color: #f5f7fb;
-}
-
-/* Button container inside modal */
-.button-container-right {
-  display: flex; justify-content: flex-end; width: 100%; margin-top: 1.75rem;
-}
-
-/* ========== Lively Buttons (CustomButton + MainButton) ========== */
-/* Uses theme vars from App.css: --btn-vivid, --btn-on, --btn-vivid-hover, --btn-vivid-press, --btn-glow */
-.custom-btn,
 .gradient-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 10px;
-  padding: 14px 24px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.06);
-  background: linear-gradient(180deg, var(--btn-vivid-hover) 0%, var(--btn-vivid) 100%);
-  color: var(--btn-on);
-  font-weight: 800; font-size: 17px; line-height: 1;
-  letter-spacing: .2px;
-  cursor: pointer; user-select: none;
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.08) inset,
-    0 10px 24px var(--btn-glow),
-    0 2px 6px rgba(0,0,0,.18);
-  transition: transform .15s ease, filter .2s ease, box-shadow .25s ease, background .2s ease;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.custom-btn:hover:not(.is-disabled):not(.is-loading),
-.gradient-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  background: linear-gradient(180deg, var(--btn-vivid) 0%, var(--btn-vivid-hover) 100%);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.1) inset,
-    0 14px 30px var(--btn-glow),
-    0 4px 10px rgba(0,0,0,.22);
-}
-
-.custom-btn:active:not(.is-disabled):not(.is-loading),
-.custom-btn.is-pressed,
-.gradient-btn:active:not(:disabled) {
-  transform: translateY(0);
-  background: var(--btn-vivid-press);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.06) inset,
-    0 8px 18px var(--btn-glow),
-    0 2px 6px rgba(0,0,0,.2);
-}
-
-/* Focus ring for accessibility */
-.custom-btn:focus-visible,
-.gradient-btn:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 3px rgba(255,255,255,.25),
-    0 0 0 6px var(--btn-glow),
-    0 12px 28px var(--btn-glow);
-}
-
-/* Sizes */
-.btn-sm { padding: 10px 16px; font-size: 15px; border-radius: 12px; }
-.btn-md { padding: 14px 24px; font-size: 17px; border-radius: 14px; }
-.btn-lg { padding: 16px 28px; font-size: 18px; border-radius: 18px; }
-
-/* Loading / Disabled */
-.custom-btn.is-disabled,
-.custom-btn[aria-disabled="true"],
-.gradient-btn:disabled {
-  opacity: .6; cursor: not-allowed; pointer-events: none;
-  box-shadow: none; transform: none;
-}
-
-/* Content wrapper */
-.btn-label {
+  position: relative; 
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  color: #070606;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #25d5db;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  box-shadow: 0 4px 0 #00695c, 0 6px 10px rgba(0, 191, 166, 0.2);
+  overflow: hidden; 
 }
 
-/* Loading spinner */
-.btn-spinner {
-  width: 18px; height: 18px;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: btn-spin .8s linear infinite;
-}
-@keyframes btn-spin { to { transform: rotate(360deg); } }
-
-/* Optional: attention pulse */
-.btn-attention { animation: btn-pulse 1.6s ease-in-out infinite; }
-@keyframes btn-pulse {
-  0%   { box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset, 0 10px 24px var(--btn-glow), 0 2px 6px rgba(0,0,0,.18); }
-  50%  { box-shadow: 0 0 0 2px rgba(255,255,255,.12) inset, 0 18px 36px var(--btn-glow), 0 6px 14px rgba(0,0,0,.22); transform: translateY(-1px); }
-  100% { box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset, 0 10px 24px var(--btn-glow), 0 2px 6px rgba(0,0,0,.18); }
-}
-
-/* Optional: diagonal shine on hover */
-.btn-lively::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.35) 50%, transparent 60%);
-  transform: translateX(-120%) skewX(-20deg);
-  transition: transform .6s ease;
-  pointer-events: none;
-}
-.btn-lively:hover::after { transform: translateX(120%) skewX(-20deg); }
-
-/* Icon helpers if needed */
-.btn-icon { display: inline-flex; align-items: center; }
-.btn-icon-left { margin-right: 6px; }
-.btn-icon-right { margin-left: 6px; }
-
-@media (hover: none) {
-  /* keep buttons steady on touch devices */
-  .custom-btn:hover,
-  .gradient-btn:hover { transform: none; }
+/*OVERLAY */
+.gradient-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%; 
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  pointer-events: none; 
+  z-index: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .btn-attention { animation: none; }
-  .btn-lively::after { display: none; }
+/* Hover Effect */
+.gradient-btn:hover {
+  transform: scale(1.05);
+  background-color: #00bfa6;
+  box-shadow: 0 6px 15px rgba(0, 191, 166, 0.3);
 }
+
+/* Icon styling remains the same */
+.btn-icon {
+  font-size: 18px;
+}
+
+
+
+  
+  .gradient-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  } 
+
+  /*Title Bar*/
+
+  .custom-title-bar {
+    height: 30px;
+    background: #1f1f1f;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    -webkit-app-region: drag; /* Allows window dragging */
+  }
+  
+  .window-controls button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-app-region: no-drag; /* Prevent buttons from being draggable */
+  }
+  
+  .window-controls button:hover {
+    background-color: #444;
+  }
+  

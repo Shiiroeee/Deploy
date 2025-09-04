@@ -1,26 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import lofuImage from '../assets/3.png';
+import lofuImage from '../assets/LOGO21.png';
+import '../App.css';
 import '../components/Screen.css';
-import '../components/Information.css';
-import ThemeToggle from '../components/darkmode';
+import '../components/Information.css'; 
 
 function InformationPage() {
-  // Theme (same local state so the switch reflects current theme here too)
-  const systemPrefersDark = useMemo(
-    () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
-    []
-  );
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('theme');
-    return saved ?? (systemPrefersDark ? 'dark' : 'light');
-  });
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const [openModal, setOpenModal] = useState(null);
+  const [openModal, setOpenModal] = useState(null); 
 
   const archInfo = {
     Flat: {
@@ -45,18 +31,11 @@ function InformationPage() {
         <div className="navbar-logo">
           <Link to="/"><img src={lofuImage} alt="Lofu" className="lofu-name" /></Link>
         </div>
-
-        {/* Right side: links + theme toggle */}
-        <div className="navbar-right">
-          <ul className="navbar-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/result">Result</Link></li>
-            <li><Link to="/information" className="active">Information</Link></li>
-            <li><Link to="/history">History</Link></li>
-            <li><Link to="/admin">Admin</Link></li>
-          </ul>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </div>
+        <ul className="navbar-links">
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/result">Result</Link></li>
+          <li><Link to="/information">Information</Link></li>
+        </ul>
       </nav>
 
       <div className="info-body centered">
@@ -74,7 +53,7 @@ function InformationPage() {
           ))}
         </div>
 
-        {/* Modal (note: class names may overlap with your welcome modal; OK if only one shows at a time) */}
+        {/* Modal */}
         {openModal && (
           <div className="modal-overlay" onClick={() => setOpenModal(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -117,7 +96,7 @@ function InformationPage() {
             <li>Shin splints from overcompensating</li>
           </ul>
 
-          <h2>If left untreated the following may develop:</h2>
+           <h2>If left untreated the following may develop:</h2>
           <ul>
             <li>Gait disorder and abnormalities</li>
             <li>Deformities (i.e. bunions, or hammertoes)</li>
@@ -128,7 +107,7 @@ function InformationPage() {
         <div className="symptom-box">
           <h2>Symptoms of High Arch include the following:</h2>
           <ul>
-            <li>Foot pain (specifically in the ball or heel area)</li>
+            <li>Foot pain (specifically in the ball or heel area) </li>
             <li>Ankle pain and swelling</li>
             <li>Arch pain</li>
           </ul>
