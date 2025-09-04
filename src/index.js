@@ -6,7 +6,7 @@ import Result from './tabs/Result';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Information from './tabs/Information';
 import Admin from './tabs/Admin';
-//import History from './tabs/History';
+import History from './tabs/History';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,7 +16,7 @@ root.render(
         <Route path="/" element={<App />} />
         <Route path="/result" element={<Result />} />
         <Route path="/information" element={<Information />} />
-        <Route path="/history" element={<history />} />
+        <Route path="/history" element={<History />} />
         <Route path="/admin" element={<Admin/>} />
       </Routes>
     </BrowserRouter>

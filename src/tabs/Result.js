@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import lofuImage from '../assets/LOGO21.png';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import lofuImage from '../assets/3.png';
 import '../App.css';
 import '../components/Screen.css';
 import MainButton from '../components/MainButton';
 import ThemeToggle from '../components/darkmode';
 
 function ResultPage() {
-  // Theme (read/persist locally so the toggle reflects current theme on this page)
+  // Theme
   const systemPrefersDark = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
     []
@@ -54,11 +54,11 @@ function ResultPage() {
         {/* Right side: links + theme toggle */}
         <div className="navbar-right">
           <ul className="navbar-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/result" className="active">Result</Link></li>
-            <li><Link to="/information">Information</Link></li>
-            <li><Link to="/history">History</Link></li>
-            <li><Link to="/admin">Admin</Link></li>
+            <li><NavLink to="/" end className={({isActive}) => isActive ? 'active' : undefined}>Home</NavLink></li>
+            <li><NavLink to="/result" className={({isActive}) => isActive ? 'active' : undefined}>Result</NavLink></li>
+            <li><NavLink to="/information" className={({isActive}) => isActive ? 'active' : undefined}>Information</NavLink></li>
+            <li><NavLink to="/history" className={({isActive}) => isActive ? 'active' : undefined}>History</NavLink></li>
+            <li><NavLink to="/admin" className={({isActive}) => isActive ? 'active' : undefined}>Admin</NavLink></li>
           </ul>
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>

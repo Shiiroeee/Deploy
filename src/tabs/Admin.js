@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import lofuImage from '../assets/LOGO21.png';
+import lofuImage from '../assets/3.png';
 import '../App.css';
 import MainButton from '../components/MainButton';
 import '../components/AdminPage.css';

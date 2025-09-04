@@ -1,7 +1,7 @@
 /* ========== Welcome Modal ========== */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
+  inset: 0;
   width: 100vw; height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
@@ -24,7 +24,15 @@
   transition: transform 0.4s ease;
   transform: scale(1);
   font-size: 1.3rem; line-height: 1.9rem;
+
+  /* make long content scroll inside the modal (page is non-scroll) */
+  max-height: min(85vh, 900px);
+  overflow: auto;
 }
+@supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+  .modal-overlay { background-color: rgba(0, 0, 0, 0.6); }
+}
+
 .modal-header {
   display: flex; flex-direction: column; align-items: center;
   gap: 0.75rem; margin-bottom: 1rem;
@@ -46,7 +54,7 @@
 }
 
 /* ========== Lively Buttons (CustomButton + MainButton) ========== */
-/* vivid teal variables come from App.css theme vars */
+/* Uses theme vars from App.css: --btn-vivid, --btn-on, --btn-vivid-hover, --btn-vivid-press, --btn-glow */
 .custom-btn,
 .gradient-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -65,10 +73,11 @@
     0 2px 6px rgba(0,0,0,.18);
   transition: transform .15s ease, filter .2s ease, box-shadow .25s ease, background .2s ease;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .custom-btn:hover:not(.is-disabled):not(.is-loading),
-.gradient-btn:hover {
+.gradient-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   background: linear-gradient(180deg, var(--btn-vivid) 0%, var(--btn-vivid-hover) 100%);
   box-shadow:
@@ -79,7 +88,7 @@
 
 .custom-btn:active:not(.is-disabled):not(.is-loading),
 .custom-btn.is-pressed,
-.gradient-btn:active {
+.gradient-btn:active:not(:disabled) {
   transform: translateY(0);
   background: var(--btn-vivid-press);
   box-shadow:
@@ -105,19 +114,30 @@
 
 /* Loading / Disabled */
 .custom-btn.is-disabled,
-.custom-btn[aria-disabled="true"] {
+.custom-btn[aria-disabled="true"],
+.gradient-btn:disabled {
   opacity: .6; cursor: not-allowed; pointer-events: none;
+  box-shadow: none; transform: none;
 }
+
+/* Content wrapper */
+.btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading spinner */
 .btn-spinner {
   width: 18px; height: 18px;
-  border: 2px solid rgba(255,255,255,.35);
-  border-top-color: rgba(255,255,255,1);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
   border-radius: 50%;
   animation: btn-spin .8s linear infinite;
 }
 @keyframes btn-spin { to { transform: rotate(360deg); } }
 
-/* Optional: attention pulse (add className="btn-attention") */
+/* Optional: attention pulse */
 .btn-attention { animation: btn-pulse 1.6s ease-in-out infinite; }
 @keyframes btn-pulse {
   0%   { box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset, 0 10px 24px var(--btn-glow), 0 2px 6px rgba(0,0,0,.18); }
@@ -125,7 +145,7 @@
   100% { box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset, 0 10px 24px var(--btn-glow), 0 2px 6px rgba(0,0,0,.18); }
 }
 
-/* Optional: diagonal shine on hover (add className="btn-lively") */
+/* Optional: diagonal shine on hover */
 .btn-lively::after {
   content: "";
   position: absolute; inset: 0;
@@ -140,6 +160,12 @@
 .btn-icon { display: inline-flex; align-items: center; }
 .btn-icon-left { margin-right: 6px; }
 .btn-icon-right { margin-left: 6px; }
+
+@media (hover: none) {
+  /* keep buttons steady on touch devices */
+  .custom-btn:hover,
+  .gradient-btn:hover { transform: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .btn-attention { animation: none; }

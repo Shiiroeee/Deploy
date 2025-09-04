@@ -1,13 +1,22 @@
-// App.js
+// src/App.js
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import lofuImage from './assets/LOGO21.png';
+import lofuImage from './assets/3.png';
 import './App.css';
 import WelcomeModal from './components/WelcomeM';
 import MainButton from './components/MainButton';
 import ThemeToggle from './components/darkmode';
 
-const BACKEND = 'http://localhost:5000';
+import { ensureSignedIn } from './lib/firebase';
+import { createCapture, attachCrops, attachClassification } from './lib/uploads';
+
+// ===== Backend toggles =====
+const USE_BACKEND = String(process.env.REACT_APP_USE_BACKEND || '0') === '1';
+const BACKEND =
+  (process.env.REACT_APP_API_URL && process.env.REACT_APP_API_URL.trim()) ||
+  'http://localhost:5000';
+const api = (path) => `${BACKEND.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+
 const hasSeenWelcome = () => sessionStorage.getItem('welcome_seen') === '1';
 
 function App() {
@@ -25,22 +34,29 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // WELCOME MODAL (one-time per app open)
+  // AUTH (anonymous)
+  const [uid, setUid] = useState(null);
+  useEffect(() => {
+    (async () => {
+      const user = await ensureSignedIn();
+      setUid(user?.uid || null);
+    })();
+  }, []);
+
+  // WELCOME MODAL
   const [showModal, setShowModal] = useState(() => !hasSeenWelcome());
   const [showMain, setShowMain]   = useState(() =>  hasSeenWelcome());
   useEffect(() => {
     if (showModal && !hasSeenWelcome()) sessionStorage.setItem('welcome_seen', '1');
   }, [showModal]);
-  const handleModalClose = () => {
-    setShowModal(false);
-    setShowMain(true);
-  };
+  const handleModalClose = () => { setShowModal(false); setShowMain(true); };
 
   // CAMERA + STATE
   const [capturedImage, setCapturedImage] = useState(null);
   const [boundedImage, setBoundedImage] = useState(null);
-  const [savedImages, setSavedImages] = useState([]);
+  const [savedImages, setSavedImages] = useState([]);    // [left, right]
   const [errorMsg, setErrorMsg] = useState('');
+  const [captureId, setCaptureId] = useState(null);      // Firestore document id for this capture
 
   const videoRef = useRef(null);
   const captureCanvasRef = useRef(null);
@@ -84,10 +100,11 @@ function App() {
     return () => stopCamera();
   }, [showMain, capturedImage, startCamera, stopCamera]);
 
-  // BACKEND HELPERS
+  // Optional backend save (guarded)
   const saveBothToBackend = async (capturedBase64, croppedBase64Array) => {
+    if (!USE_BACKEND) return;
     try {
-      const res = await fetch(`${BACKEND}/save_images`, {
+      const res = await fetch(api('save_images'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -95,11 +112,11 @@ function App() {
           cropped_images: croppedBase64Array || []
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Save failed');
-      console.log('Saved files:', data.files);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Save failed (${res.status})`);
+      console.log('Saved files (backend):', data.files);
     } catch (err) {
-      console.error('Failed to save images:', err);
+      console.error('Failed to save images (backend):', err);
     }
   };
 
@@ -116,14 +133,27 @@ function App() {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const dataURL = canvas.toDataURL('image/png');
+
     setCapturedImage(dataURL);
     setBoundedImage(null);
     setSavedImages([]);
+    setCaptureId(null);
     stopCamera();
+
+    // Optional: your own backend
     await saveBothToBackend(dataURL, []);
+
+    // Save to Firebase (new doc)
+    try {
+      if (!uid) throw new Error('No user UID yet.');
+      const created = await createCapture({ uid, captureDataUrl: dataURL });
+      setCaptureId(created.id);
+    } catch (e) {
+      console.error('Firebase createCapture failed:', e);
+    }
   };
 
-  // GEOMETRY
+  // GEOMETRY helpers
   const buildGlobalPolygon = (det) => {
     if (Array.isArray(det.polygon_global) && det.polygon_global.length >= 3) return det.polygon_global;
     if (Array.isArray(det.polygon) && det.polygon.length >= 3) {
@@ -183,7 +213,7 @@ function App() {
       return;
     }
     try {
-      const response = await fetch(`${BACKEND}/detect`, {
+      const response = await fetch(api('detect'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: capturedImage }),
@@ -204,13 +234,30 @@ function App() {
         });
       const topTwo = detections.slice(0, 2);
       drawBoundingBoxes(topTwo, capturedImage);
+
       const croppedBase64s = topTwo.map(det => det.annotated_cropped || det.cropped_image).filter(Boolean);
       if (croppedBase64s.length === 0) {
         alert('No valid crops returned.');
         return;
       }
       setSavedImages(croppedBase64s);
+
+      // Optional backend persist
       await saveBothToBackend(capturedImage, croppedBase64s);
+
+      // Save crops to Firebase (attach to existing doc)
+      try {
+        if (uid && captureId) {
+          await attachCrops({
+            uid,
+            captureId,
+            leftDataUrl: croppedBase64s[0] || null,
+            rightDataUrl: croppedBase64s[1] || null,
+          });
+        }
+      } catch (e) {
+        console.error('Firebase attachCrops failed:', e);
+      }
     } catch (error) {
       console.error('Detection error:', error);
       alert('Detection failed.');
@@ -223,19 +270,35 @@ function App() {
       alert('No images to classify. Please detect feet first.');
       return;
     }
-    const results = [];
+
+    let results = [];
     try {
-      for (const img of savedImages) {
-        const response = await fetch(`${BACKEND}/classify`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: img }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Classification failed');
-        results.push({ prediction: data.prediction, confidence: data.confidence, probabilities: data.probabilities });
+      if (USE_BACKEND) {
+        for (const img of savedImages) {
+          const response = await fetch(api('classify'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: img }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Classification failed');
+          results.push({ prediction: data.prediction, confidence: data.confidence, probabilities: data.probabilities });
+        }
+      } else {
+        // frontend-only fallback so UI keeps working
+        results = savedImages.map(() => ({ prediction: '-', confidence: null, probabilities: {} }));
       }
-      navigate('/result', { state: { images: savedImages, results } });
+
+      // Save classification array to Firebase
+      try {
+        if (uid && captureId) {
+          await attachClassification({ uid, captureId, classification: results });
+        }
+      } catch (e) {
+        console.error('Firebase attachClassification failed:', e);
+      }
+
+      navigate('/result', { state: { images: savedImages, results, captureId } });
     } catch (error) {
       console.error('Classification error:', error);
       alert('Classification failed.');
@@ -247,8 +310,8 @@ function App() {
     opacity: showMain ? 1 : 0,
     transform: showMain ? 'translateY(0)' : 'translateY(8px)',
     transition: prefersReducedMotion ? 'none' : 'opacity 420ms ease, transform 420ms ease',
-    height: '100dvh',     // fixed viewport height
-    overflow: 'hidden',   // no page scroll
+    height: '100dvh',
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
   };
@@ -291,34 +354,26 @@ function App() {
           </div>
         )}
 
-        <div className="main-body-vertical">
+        <div className="main-body-vertical" style={{ flex: '1 1 auto', overflow: 'hidden' }}>
           {/* LEFT: Crops + classify */}
-          <div className="left-section">
+          <div className="left-section" style={{ overflow: 'hidden' }}>
             <div className="image-pair-row">
               <div className="image-box">
-                {savedImages[0] ? (
-                  <img src={savedImages[0]} alt="Cropped Left" />
-                ) : (
-                  <div className="placeholder">No image yet</div>
-                )}
+                {savedImages[0] ? <img src={savedImages[0]} alt="Cropped Left" /> : <div className="placeholder">No image yet</div>}
               </div>
               <div className="image-box">
-                {savedImages[1] ? (
-                  <img src={savedImages[1]} alt="Cropped Right" />
-                ) : (
-                  <div className="placeholder">No image yet</div>
-                )}
+                {savedImages[1] ? <img src={savedImages[1]} alt="Cropped Right" /> : <div className="placeholder">No image yet</div>}
               </div>
             </div>
-            <div style={{ marginTop: '20px', display: 'flex', gap: 12 }}>
+            <div style={{ marginTop: 20, display: 'flex', gap: 12 }}>
               <MainButton className="btn-lively" onClick={handleClassify}>CLASSIFY</MainButton>
             </div>
           </div>
 
           {/* RIGHT: Camera / Captured */}
-          <div className="right-section">
+          <div className="right-section" style={{ overflow: 'hidden' }}>
             {capturedImage ? (
-              <div className="captured-wrapper">
+              <div className="captured-wrapper" style={{ width: '100%' }}>
                 <div className="image-slot">
                   <img src={boundedImage || capturedImage} alt="Captured" />
                   <button
@@ -327,6 +382,7 @@ function App() {
                       setCapturedImage(null);
                       setBoundedImage(null);
                       setSavedImages([]);
+                      setCaptureId(null);
                       startCamera();
                     }}
                   >

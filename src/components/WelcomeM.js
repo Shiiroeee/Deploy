@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import './component.css';
 import CustomButton from './WelcomeButton';
-import logo from '../assets/White-Logo.png';
+import logo from '../assets/4.png';
 
 const WelcomeModal = ({ onClose }) => {
   const [fadeOut, setFadeOut] = useState(false);
