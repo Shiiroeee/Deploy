@@ -1,0 +1,300 @@
+/* ============================================
+   ResultPage.css — full file with dark mode
+   ============================================ */
+
+/* Map local tokens to global theme text */
+:root,
+[data-theme="dark"] {
+  --fg: var(--ink);
+  --muted: var(--ink-muted);
+}
+
+/* Other local tokens */
+:root {
+  --border-color: #d6dbe3;
+  --card-bg: #fff;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06);
+
+  --chip-bg: #f5f7ff;
+  --chip-fg: #2b5bd7;
+
+  --link: #185adb;
+  --link-hover: #0f47c5;
+
+  --scroll-thumb: rgba(0,0,0,0.25);
+  --scroll-thumb-hover: rgba(0,0,0,0.35);
+  --scroll-track: transparent;
+}
+
+/* Dark overrides that aren't inherited from App.css */
+[data-theme="dark"] {
+  --border-color: #2a3646;
+  --card-bg: #121821;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.5);
+
+  --chip-bg: #14263b;
+  --chip-fg: #9ec5ff;
+
+  --link: #7ab7ff;
+  --link-hover: #a6d0ff;
+
+  --scroll-thumb: rgba(255,255,255,0.25);
+  --scroll-thumb-hover: rgba(255,255,255,0.38);
+  --scroll-track: transparent;
+}
+
+/* ===== FULL-HEIGHT RESULT PAGE (scoped) ===== */
+.result-page {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Sticky navbar while results scroll underneath */
+.result-page .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+/* Links inside result page */
+.result-page a,
+.result-page .link-button,
+.result-page .insole-link {
+  color: var(--link);
+  border-color: var(--border-color);
+}
+.result-page a:hover,
+.result-page .link-button:hover,
+.result-page .insole-link:hover {
+  color: var(--link-hover);
+}
+
+/* The area that actually scrolls (wheel/touch) */
+.result-page .result-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 10px;
+}
+
+/* Back button sits BELOW navbar and sticks while scrolling */
+.result-page .back-fab {
+  position: sticky;
+  top: 12px;
+  align-self: flex-start;
+  margin: 12px 0 8px 2px;
+  z-index: 10;
+
+  background: var(--card-bg);
+  color: var(--fg);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.result-page .back-fab:hover { background: #f6f6f6; }
+
+/* Content width and spacing */
+.result-page .result-body.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  padding: 12px 0 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Two columns that stretch to the same height */
+.result-page .result-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Card chrome */
+.result-page .result-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: min(72vh, 760px);
+  color: var(--fg);
+}
+
+/* >>> Divider utility <<< */
+.result-page .ui-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-color);
+  margin: 8px 0 12px;
+  border-radius: 1px;
+}
+
+/* LEFT: image scales to available space */
+.result-page .image-side .result-image {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Classification chip */
+.result-page .classification-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  border: 1px solid #dfe6ff;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+.result-page .classification-chip .chip-label {
+  color: var(--muted);
+}
+.result-page .classification-chip .chip-value {
+  font-weight: 700;
+}
+
+/* RIGHT: Report status (shows CONTENT of the generated report) */
+.result-page .report-status {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.result-page .report-placeholder {
+  flex: 1 1 auto;
+  min-height: 420px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  text-align: center;
+  padding: 16px;
+}
+
+/* Report content block */
+.result-page .report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 14px;
+  color: var(--fg);
+}
+.result-page .report-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: inherit;
+}
+.result-page .report-subtitle {
+  margin-top: 10px;
+  font-weight: 700;
+  color: inherit;
+}
+.result-page .report-line {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 8px;
+}
+.result-page .report-line .k { color: var(--muted); }
+.result-page .report-line .v { font-weight: 600; color: inherit; }
+.result-page .report-paragraph { line-height: 1.5; color: var(--fg); }
+
+/* Simple list styling inside report */
+.result-page .report-list {
+  margin: 6px 0 0 0;
+  padding-left: 18px;
+  color: inherit;
+}
+.result-page .report-list li { margin: 4px 0; }
+
+/* Report file actions */
+.result-page .report-files {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.result-page .report-files .file-line {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 8px;
+}
+.result-page .file-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Disclaimer text */
+.result-page .report-disclaimer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .result-page .result-card {
+    min-height: min(64vh, 720px);
+  }
+}
+@media (max-width: 860px) {
+  .result-page .result-row {
+    grid-template-columns: 1fr;
+  }
+  .result-page .report-placeholder {
+    min-height: 360px;
+  }
+}
+
+/* Pretty scrollbars (optional, scoped) */
+.result-page .result-scroll::-webkit-scrollbar { width: 10px; }
+.result-page .result-scroll::-webkit-scrollbar-track { background: var(--scroll-track); }
+.result-page .result-scroll::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 8px;
+}
+.result-page .result-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+}
+/* Firefox */
+.result-page .result-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+/* Insole recommendations inside Report Status (scoped) */
+.result-page .insole-section { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.result-page .insole-title { margin: 0; font-size: 16px; font-weight: 800; color: inherit; }
+.result-page .insole-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.result-page .insole-card { display: grid; grid-template-rows: 140px auto auto; gap: 8px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-bg); padding: 10px; }
+.result-page .insole-thumb { background: #f7f7f7; border-radius: 8px; overflow: hidden; display: grid; place-items: center; }
+.result-page .insole-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.result-page .insole-name { font-weight: 700; color: inherit; }
+.result-page .insole-link { align-self: start; display: inline-block; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); text-decoration: none; color: var(--fg); background: #fafafa; }
+.result-page .insole-link:hover { background: #f0f0f0; }
