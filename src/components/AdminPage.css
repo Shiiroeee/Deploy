@@ -1,0 +1,224 @@
+/* ===== Admin page shell (full height, inner scroll) ===== */
+.admin-page {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* keep the internal scroller tidy */
+}
+
+/* Make the content area scroll while navbar stays visible */
+.admin-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 10px 28px;
+}
+
+/* Pretty scrollbars */
+.admin-scroll::-webkit-scrollbar { width: 10px; }
+.admin-scroll::-webkit-scrollbar-track { background: transparent; }
+.admin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.25);
+  border-radius: 8px;
+}
+.admin-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.35); }
+/* Firefox */
+.admin-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.25) transparent; }
+
+/* Content container */
+.admin-body.centered {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+/* Card chrome */
+.admin-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e2e2e2);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow, 0 1px 3px rgba(0,0,0,0.06));
+  padding: 14px;
+}
+
+.admin-card-title {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* Upload section */
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.upload-preview { margin-top: 12px; }
+.upload-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+/* Detect card: make inner content scrollable so page layout stays stable */
+.detect-card .detect-body {
+  max-height: 60vh;           /* scrollable area height */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Pretty scrollbars inside detect-body */
+.detect-card .detect-body::-webkit-scrollbar { width: 8px; }
+.detect-card .detect-body::-webkit-scrollbar-track { background: transparent; }
+.detect-card .detect-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.22);
+  border-radius: 8px;
+}
+.detect-card .detect-body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.34); }
+/* Firefox */
+.detect-card .detect-body { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.22) transparent; }
+
+/* Crops grid */
+.crops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.crop-card {
+  position: relative;
+  border: 1px solid var(--border-color, #e6e6e6);
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Ascending order badge (top-left) */
+.crop-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #0b5bd7;
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+.crop-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.crop-meta { display: grid; gap: 6px; }
+
+.crop-line {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+}
+.crop-line .k { color: var(--muted, #666); }
+.crop-line .v { font-weight: 700; }
+
+/* Action row under crops */
+.action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+/* Placeholders */
+.placeholder {
+  border: 1px dashed var(--border-color, #bbb);
+  border-radius: 8px;
+  padding: 16px;
+  color: var(--muted, #666);
+  text-align: center;
+}
+.placeholder.tall {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+}
+
+/* Small link-style button */
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-color, #ddd);
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fafafa;
+  color: var(--fg, #111);
+  text-decoration: none;
+  cursor: pointer;
+}
+.link-button:hover { background: #f0f0f0; }
+
+/* Responsive tweaks */
+@media (max-width: 560px) {
+  .crop-line { grid-template-columns: 1fr; }
+}
+
+
+/* Results summary card */
+.results-card .results-body {
+  max-height: 40vh;         /* scroll if many rows */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.results-card .results-body::-webkit-scrollbar { width: 8px; }
+.results-card .results-body::-webkit-scrollbar-track { background: transparent; }
+.results-card .results-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.22);
+  border-radius: 8px;
+}
+.results-card .results-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,.34);
+}
+/* Firefox */
+.results-card .results-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,.22) transparent;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.results-table thead th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #f6f7fb;
+  border-bottom: 1px solid var(--border-color, #e2e2e2);
+}
+
+.results-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color, #eee);
+}

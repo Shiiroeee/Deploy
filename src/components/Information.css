@@ -1,173 +1,301 @@
-.info-container h2 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #0b3d91; 
-  text-align: center;
-  margin-bottom: 30px;
-  font-family: 'Press Start 2P', cursive; 
-  text-shadow: 2px 2px #9fffcb; 
-  letter-spacing: 1px;
-  line-height: 1.3;
-}
-
-.info-body {
-  padding: 2rem;
-}
-
-.info-title {
-  font-size: 2.2rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #00695c;
-  font-family: 'Orbitron', sans-serif;
-}
-
-.modal-box-container {
+/* ===== Page shell & scroll ===== */
+.info-page {
+  height: 100dvh;
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  overflow: hidden; /* keep inner scroller tidy */
 }
 
-.modal-box {
-  background-color: #e0f7fa;
-  padding: 1.5rem;
-  border-radius: 15px;
-  width: 250px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.modal-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.modal-box h3 {
-  margin-bottom: 0.5rem;
-  color: #0b3d91;
-}
-
-.modal-overlay {
-  position: fixed;
+/* keep navbar visible while content scrolls underneath */
+.info-page .navbar {
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  z-index: 900;
+}
+
+.info-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Pretty scrollbars for the page scroller */
+.info-scroll::-webkit-scrollbar { width: 10px; }
+.info-scroll::-webkit-scrollbar-track { background: transparent; }
+.info-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+}
+.info-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.35); }
+/* Firefox */
+.info-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.25) transparent; }
+
+/* ===== Body layout ===== */
+.info-body {
+  padding: 2rem 1.25rem 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ===== Hero ===== */
+.info-hero { text-align: center; margin-bottom: 1.5rem; }
+.info-hero h1 {
+  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  margin: 0 0 .25rem 0;
+  color: #0b3d91;
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+.info-sub { color: var(--muted, #555); margin: 0; }
+
+/* ===== Cards ===== */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 1rem;
+}
+@media (max-width: 860px) { .info-grid { grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
+@media (max-width: 560px) { .info-grid { grid-template-columns: 1fr; } }
+
+.info-card {
+  background: #eaf6ff;
+  border: 1px solid #d7e8ff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  transition: transform .15s ease, box-shadow .15s ease;
+  cursor: pointer;
+}
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.10);
+}
+.info-card h3 { margin: 0 0 .5rem 0; color: #0b3d91; font-size: 1.05rem; }
+.info-card p {
+  margin: 0 0 .75rem 0;
+  color: #123;
+  text-align: justify;
+  text-justify: inter-word;
+}
+.info-more-btn {
+  display: inline-block;
+  border: 1px solid #cfe0ff;
+  background: #fff;
+  color: #0b3d91;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: .5rem .75rem;
+  cursor: pointer;
+}
+.info-more-btn:hover { background: #f4f8ff; }
+
+/* ===== Modal (namespaced) ===== */
+.info-modal__overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  display: grid; place-items: center;
   z-index: 1000;
 }
 
-.modal-content {
+/* make modal itself scroll-friendly */
+.info-modal__content {
   position: relative;
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 20px;
-  max-width: 500px;
-  text-align: center;
-  color: #333;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-  font-size: 1rem;
-  animation: fadeIn 0.3s ease-in-out;
+  background: #fff;
+  color: #222;
+  width: min(680px, 92vw);
+  max-height: min(84vh, 760px);
+  border-radius: 18px;
+  padding: 1rem 1rem 0.75rem;
+  box-shadow: 0 16px 50px rgba(0,0,0,.35);
+  animation: info-fade-in .22s ease;
+
+  /* Important: keep column layout so we can order body before image */
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-content p {
-  text-align: justify;
+.info-modal__title {
+  margin: 0 0 .5rem 0;
+  font-size: 1.25rem;
+  color: #0b3d91;
+}
+
+/* Text section inside modal (scrollable) */
+.info-modal__body {
+  font-size: .98rem;
   line-height: 1.6;
+  text-align: justify;
+  text-justify: inter-word;
+  overflow-y: auto;          /* inner scroll wheel */
+  padding-right: 6px;
+
+  order: 1;
+  flex: 1 1 auto;
 }
 
-.modal-content a {
-  color: #00695c; 
-  text-decoration: none;
-  font-weight: bold;
-  margin: 0 2px;
+/* Pretty scrollbars inside modal body */
+.info-modal__body::-webkit-scrollbar { width: 8px; }
+.info-modal__body::-webkit-scrollbar-track { background: transparent; }
+.info-modal__body::-webkit-scrollbar-thumb { background: rgba(0,0,0,.25); border-radius: 8px; }
+.info-modal__body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.35); }
+/* Firefox */
+.info-modal__body { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.25) transparent; }
+
+.info-para { margin: .65rem 0; }
+
+.info-modal__footer {
+  display: flex; justify-content: flex-end;
+  gap: 8px;
+  padding-top: .75rem;
 }
 
-.modal-content a:hover {
-  text-decoration: underline;
+.info-close-btn {
+  background: #0b3d91; color: #fff;
+  border: 0; border-radius: 10px;
+  padding: .55rem .9rem; cursor: pointer;
+}
+.info-close-btn:hover { filter: brightness(.95); }
+
+.info-modal__close {
+  position: absolute; top: 10px; right: 14px;
+  font-size: 1.8rem; line-height: 1;
+  border: 0; background: none; cursor: pointer; color: #444;
+}
+.info-modal__close:hover { color: #ff4b5c; }
+
+@keyframes info-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.close-btn {
-  margin-top: 1.5rem;
-  padding: 0.5rem 1.5rem;
-  background-color: #007c6f;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+/* ===== Images inside modal ===== */
+.info-modal__images {
+  order: 2;                  /* always after the text body */
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  width: 100%;
 }
 
-.close-btn:hover {
-  background-color: #005f54;
+.info-modal__image {
+  background: #f7f7f7;
+  border: 1px solid #e6e8ee;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  overflow: hidden;
+  width: 100%;
+  height: auto;
 }
 
-.modal-close-icon {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 2.3rem;
-  font-weight: bold;
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  z-index: 10;
-  transition: color 0.2s ease;
+.info-modal__image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  max-height: 260px;
 }
 
-.modal-close-icon:hover {
-  color: #ff4b5c;
-}
+/* ===== Symptom sections ===== */
+.symptoms-section { margin-top: 2rem; }
 
-/* Symptom Box Styling */
-.symptom-box {
-  background-color: #f0fdf4;
-  border-radius: 20px;
-  margin-top: 3rem;
-  padding: 2rem 2.5rem;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  font-family: 'Segoe UI', sans-serif;
-  text-align: left;
-}
-
-.symptom-box h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+.symptoms-title {
+  text-align: center;
+  margin: 0 0 1rem 0;
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
   color: #1c3b70;
 }
 
-.symptom-box ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
+/* Two-column grid since Normal has no symptoms */
+.symptoms-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 18px;
+}
+@media (max-width: 560px) { .symptoms-grid-2 { grid-template-columns: 1fr; } }
+
+.symptom-card {
+  background: #f6fff8;
+  border: 1px solid #dfeee0;
+  border-radius: 14px;
+  padding: 1rem 1rem 1.1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
 }
 
-.symptom-box li {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  color: #333;
+.symptom-card h3 {
+  margin: 0 0 .5rem 0;
+  color: #0b3d91;
+  font-size: 1.05rem;
 }
 
-.more-link {
-  color: #0d47a1;
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: 5px;
+.symptom-sub {
+  margin-top: .35rem;
+  font-weight: 700;
+  color: #115e59;
 }
 
-.more-link:hover {
-  text-decoration: underline;
+.symptom-ul {
+  margin: .35rem 0 .25rem 1.1rem;
+  padding: 0;
+  text-align: justify;
+  text-justify: inter-word;
+}
+.symptom-ul li { margin: .28rem 0; color: #222; }
+
+/* Links inside modal text */
+.info-modal__content a {
+  color: #0b7d6a;
+  text-decoration: none;
+  font-weight: 700;
+  margin: 0 2px;
+}
+.info-modal__content a:hover { text-decoration: underline; }
+
+/* ===== Dark mode niceties (no layout changes) ===== */
+[data-theme="dark"] .info-hero h1 { color: #cfe0ff; text-shadow: none; }
+[data-theme="dark"] .info-sub { color: #a8b3cf; }
+
+[data-theme="dark"] .info-card {
+  background: #0f1520;
+  border-color: #1e2633;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+[data-theme="dark"] .info-card h3 { color: #cfe0ff; }
+[data-theme="dark"] .info-card p { color: #dbe4ff; }
+[data-theme="dark"] .info-more-btn {
+  background: #0b1220;
+  border-color: #263043;
+  color: #d1dcff;
+}
+[data-theme="dark"] .info-more-btn:hover { background: #121a2a; }
+
+[data-theme="dark"] .info-modal__content {
+  background: #0e131a;
+  color: #e7eefc;
+  box-shadow: 0 16px 50px rgba(0,0,0,.6);
+}
+[data-theme="dark"] .info-modal__title { color: #d4e4ff; }
+[data-theme="dark"] .info-modal__close { color: #c9d7ff; }
+[data-theme="dark"] .info-close-btn { background: #214e9d; }
+
+[data-theme="dark"] .info-modal__body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.28); }
+[data-theme="dark"] .info-modal__body { scrollbar-color: rgba(255,255,255,.28) transparent; }
+
+[data-theme="dark"] .info-modal__image {
+  background: #0f1520;
+  border-color: #1f2430;
 }
 
-.bold-text {
-  font-weight: bold;
-  color: #004d40; 
+[data-theme="dark"] .symptoms-title { color: #d5e3ff; }
+[data-theme="dark"] .symptom-card {
+  background: #0f1916;
+  border-color: #203027;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
 }
+[data-theme="dark"] .symptom-card h3 { color: #cfe0ff; }
+[data-theme="dark"] .symptom-sub { color: #7dd3fc; }
+[data-theme="dark"] .symptom-ul li { color: #dbe4ff; }
