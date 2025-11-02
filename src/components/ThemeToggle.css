@@ -1,0 +1,65 @@
+/* ThemeToggle.css – dropdown toggle
+   Relies on your App.css theme variables
+*/
+
+.tt-wrap {
+  position: relative;
+}
+
+/* Trigger button */
+.tt-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--nav-border);
+  background: var(--toggle-bg);
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tt-trigger:hover { filter: brightness(.98); }
+.tt-label { font-weight: 600; font-size: 0.92rem; }
+.tt-ic { display: inline-block; }
+
+.tt-ic.chevron {
+  opacity: .75;
+  transform: translateY(1px);
+}
+
+/* Dropdown menu */
+.tt-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 160px;
+  background: var(--panel-bg);
+  color: var(--ink);
+  border: 1px solid var(--nav-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.28);
+  padding: 6px;
+  z-index: 50;
+}
+
+.tt-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.tt-item:hover { background: color-mix(in srgb, var(--toggle-bg) 70%, transparent); }
+.tt-item.active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel-bg));
+  border: 1px solid var(--nav-border);
+}

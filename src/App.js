@@ -1,12 +1,11 @@
 // src/App.js
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import lofuImage from './assets/3.png';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 import WelcomeModal from './components/WelcomeM';
 import MainButton from './components/MainButton';
-import ThemeToggle from './components/darkmode';
+import NavBar from './components/NavBar';
 
 import { ensureSignedIn } from './lib/firebase';
 import { saveClassification } from './lib/uploads';
@@ -120,7 +119,6 @@ function App() {
     try {
       await postJSON('save-images', { session, captured_image: dataUrl, cropped_images: [] });
     } catch (e) {
-      // best-effort only
       console.warn('Failed to save captured locally:', e?.message || e);
     }
   };
@@ -221,12 +219,10 @@ function App() {
     try {
       const payload = await postJSON('detect', { image: capturedImage });
 
-      // New API shape (boxes + detections). Back-compat fallback if someone still returns an array.
       let boxes = [];
       let detections = [];
       if (Array.isArray(payload)) {
-        // old shape: treat everything as detections (no Unknown available)
-        detections = payload;
+        detections = payload; // old shape
       } else {
         boxes = Array.isArray(payload.boxes) ? payload.boxes : [];
         detections = Array.isArray(payload.detections) ? payload.detections : [];
@@ -349,20 +345,7 @@ function App() {
       {showModal && <WelcomeModal onClose={handleModalClose} />}
 
       <div className="App" style={containerStyle} aria-busy={isClassifying}>
-        <nav className="navbar">
-          <div className="navbar-logo">
-            <Link to="/"><img src={lofuImage} alt="Lofu" className="lofu-name" /></Link>
-          </div>
-
-          <div className="navbar-right">
-            <ul className="navbar-links">
-              <li><Link to="/result">Result</Link></li>
-              <li><Link to="/history">History</Link></li>
-              <li><Link to="/information">Information</Link></li>
-            </ul>
-            <ThemeToggle theme={theme} setTheme={setTheme} />
-          </div>
-        </nav>
+        <NavBar theme={theme} setTheme={setTheme} />
 
         {errorMsg && (
           <div

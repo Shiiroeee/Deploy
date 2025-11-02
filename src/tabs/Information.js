@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import lofuImage from '../assets/3.png';
 import '../components/Screen.css';
 import '../components/Information.css';
-import ThemeToggle from '../components/darkmode';
+import NavBar from '../components/NavBar';
 
 // Arch images
 import flatImg from '../assets/Arch/Flat Foot/Flat1.png';
@@ -14,7 +12,7 @@ import normalImg from '../assets/Arch/Normal Arch/Normal1.png';
 import normalImg2 from '../assets/Arch/Normal Arch/Normal2.png';
 
 function InformationPage() {
-  // Theme
+  // Theme (kept here so NavBar can control it)
   const systemPrefersDark = useMemo(
     () =>
       typeof window !== 'undefined' &&
@@ -208,24 +206,8 @@ function InformationPage() {
 
   return (
     <div className="App info-page">
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="navbar-logo">
-          <Link to="/">
-            <img src={lofuImage} alt="Lofu" className="lofu-name" />
-          </Link>
-        </div>
-
-        <div className="navbar-right">
-          <ul className="navbar-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/result">Result</Link></li>
-            <li><Link to="/history">History</Link></li>
-            <li><Link to="/information" className="active">Information</Link></li>
-          </ul>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </div>
-      </nav>
+      {/* Shared NavBar with dropdown + update icon + theme toggle */}
+      <NavBar theme={theme} setTheme={setTheme} />
 
       {/* Page scroller */}
       <div className="info-scroll">
@@ -239,10 +221,16 @@ function InformationPage() {
           {/* Cards */}
           <div className="info-grid">
             {['Flat', 'Normal', 'High'].map((type) => (
-              <div key={type} className="info-card">
+              <div key={type} className="info-card" onClick={() => setOpenModal(type)}>
                 <h3>{archInfo[type].title}</h3>
                 <p>{archInfo[type].short}</p>
-                <button className="info-more-btn" onClick={() => setOpenModal(type)}>
+                <button
+                  className="info-more-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenModal(type);
+                  }}
+                >
                   More…
                 </button>
               </div>

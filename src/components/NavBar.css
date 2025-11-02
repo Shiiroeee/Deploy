@@ -1,0 +1,104 @@
+/* ===============================
+   NAVBAR (isolated)
+=============================== */
+.navbar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  background-color: var(--nav);
+  padding: 15px 30px;
+  border-bottom: 3px solid var(--nav-border);
+}
+
+.navbar-logo { display: flex; align-items: center; }
+.navbar-logo img { width: 50px; height: auto; margin-right: 10px; }
+.navbar-logo span { font-size: 1.5rem; font-weight: bold; color: #0c0a0a; }
+
+.navbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+
+.navbar-links { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
+.navbar-links li a {
+  color: var(--link);
+  text-decoration: none;
+  font-size: 1.15rem;
+  transition: color 0.2s, box-shadow 0.2s, transform 0.2s;
+  padding: 4px 6px; border-radius: 8px;
+}
+.navbar-links li a:hover,
+.navbar-links li a.active {
+  color: var(--accent);
+  font-weight: bold;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+}
+
+/* ===============================
+   NAVBAR DROPDOWN
+=============================== */
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-dropdown-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--link);
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.nav-dropdown-btn:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: var(--panel-bg);
+  color: var(--ink);
+  border: 1px solid var(--nav-border);
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  z-index: 1000;
+}
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* label-left, control-right */
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  width: 100%;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.nav-menu-item svg { flex-shrink: 0; }
+.nav-menu-item:hover {
+  background: var(--hover-bg, rgba(0,0,0,0.06));
+}
+
+.nav-menu-sep {
+  height: 1px;
+  margin: 6px 8px;
+  background: var(--nav-border);
+  opacity: 0.7;
+}
+
+/* nav logo scaling (kept) */
+.lofu-name {
+  max-height: 100px;
+  transform: scale(2.5);
+  transform-origin: left center;
+}

@@ -1,12 +1,10 @@
 // src/pages/HistoryPage.jsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import lofuImage from '../assets/3.png';
 import '../components/history.css';
 import '../App.css';
 import '../components/Screen.css';
 import MainButton from '../components/MainButton';
-import ThemeToggle from '../components/darkmode';
+import NavBar from '../components/NavBar';
 
 import { ensureSignedIn, auth } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -32,7 +30,7 @@ function joinPredictions(classification) {
 }
 
 export default function HistoryPage() {
-  // THEME
+  // THEME (so NavBar can control it)
   const systemPrefersDark = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
     []
@@ -54,19 +52,20 @@ export default function HistoryPage() {
     let mounted = true;
     (async () => {
       try {
-        const user = await ensureSignedIn(); // if you want soft auth, you can remove this
+        const user = await ensureSignedIn(); // hard auth; make soft by removing this call
         if (mounted) setUid(user?.uid || null);
       } catch (e) {
-        // If ensureSignedIn throws when not signed, we still mark authReady
         console.warn('[History] ensureSignedIn failed (maybe not logged in):', e);
       } finally {
         if (mounted) setAuthReady(true);
       }
     })();
+
     const unsub = onAuthStateChanged(auth, (user) => {
       setUid(user?.uid || null);
       setAuthReady(true);
     });
+
     return () => {
       mounted = false;
       unsub();
@@ -81,7 +80,6 @@ export default function HistoryPage() {
   const [moreLoading, setMoreLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Visible debug hooks (optional; remove if noisy)
   const log = (...args) => console.debug('[History]', ...args);
 
   // INITIAL FETCH when auth ready & uid present
@@ -192,20 +190,7 @@ export default function HistoryPage() {
   // RENDER
   return (
     <div className="App history-page">
-      <nav className="navbar">
-        <div className="navbar-logo">
-          <Link to="/"><img src={lofuImage} alt="Lofu" className="lofu-name" /></Link>
-        </div>
-        <div className="navbar-right">
-          <ul className="navbar-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/result">Result</Link></li>
-            <li><Link to="/history" className="active">History</Link></li>
-            <li><Link to="/information">Information</Link></li>
-          </ul>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </div>
-      </nav>
+      <NavBar theme={theme} setTheme={setTheme} />
 
       <div className="history-scroll">
         <div className="history-body">

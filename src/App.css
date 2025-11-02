@@ -80,40 +80,7 @@ body {
 .text-muted { color: var(--ink-muted); }
 
 /* ===============================
-   NAVBAR
-=============================== */
-.navbar {
-  position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
-  background-color: var(--nav);
-  padding: 15px 30px;
-  border-bottom: 3px solid var(--nav-border);
-}
-
-.navbar-logo { display: flex; align-items: center; }
-.navbar-logo img { width: 50px; height: auto; margin-right: 10px; }
-.navbar-logo span { font-size: 1.5rem; font-weight: bold; color: #0c0a0a; }
-
-.navbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
-
-.navbar-links { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
-.navbar-links li a {
-  color: var(--link);
-  text-decoration: none;
-  font-size: 1.15rem;
-  transition: color 0.2s, box-shadow 0.2s, transform 0.2s;
-  padding: 4px 6px; border-radius: 8px;
-}
-.navbar-links li a:hover,
-.navbar-links li a.active {
-  color: var(--accent);
-  font-weight: bold;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 2px;
-}
-
-/* ===============================
-   TOGGLE SWITCH (right of navbar)
+   TOGGLE SWITCH (used by ThemeToggle)
 =============================== */
 .theme-switch {
   position: relative;
@@ -340,13 +307,6 @@ body {
   box-shadow: 0 0 8px rgba(34, 166, 179, 0.6);
 }
 
-/* nav logo scaling (kept) */
-.lofu-name {
-  max-height: 100px;
-  transform: scale(2.5);
-  transform-origin: left center;
-}
-
 /* ===============================
    RESPONSIVE
 =============================== */
@@ -367,9 +327,6 @@ body {
   .detect-capture-buttons { max-width: 100%; }
 }
 @media (max-width: 600px) {
-  .navbar { padding: 12px 16px; }
-  .navbar-links { gap: 12px; }
-  .navbar-links li a { font-size: 1rem; }
   .image-box { height: 380px; }
 }
 

@@ -1,9 +1,8 @@
 // src/tabs/Result.js
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
-import lofuImage from '../assets/3.png';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../App.css';
-import ThemeToggle from '../components/darkmode';
+import NavBar from '../components/NavBar';
 import '../components/ResultPage.css';
 
 // ---------------- CONFIG ----------------
@@ -104,7 +103,6 @@ function ImageWithOverlay({
           <line x1="0" y1={yFore} x2={box.w} y2={yFore} stroke="red" strokeWidth="4" />
           <line x1="0" y1={yArch1} x2={box.w} y2={yArch1} stroke="blue" strokeWidth="4" />
           <line x1="0" y1={yArch2} x2={box.w} y2={yArch2} stroke="blue" strokeWidth="4" />
-          
         </svg>
       )}
     </div>
@@ -170,8 +168,7 @@ export default function Result() {
       arch_type: archType,
       csi: typeof resForRow.csi === 'number' ? resForRow.csi : resForRow.csi_intensity,
       overlay: resForRow.overlay,
-      // If you also returned mask_overlay and want the backend to echo it:
-      // mask_data_url: resForRow.mask_overlay,
+      // mask_data_url: resForRow.mask_overlay, // if needed
     };
 
     const r = await fetch(url, {
@@ -253,20 +250,8 @@ export default function Result() {
 
   return (
     <div className="App result-page">
-      <nav className="navbar">
-        <div className="navbar-logo">
-          <Link to="/"><img src={lofuImage} alt="Lofu" className="lofu-name" /></Link>
-        </div>
-        <div className="navbar-right">
-          <ul className="navbar-links">
-            <li><NavLink to="/" end className={({isActive}) => isActive ? 'active' : undefined}>Home</NavLink></li>
-            <li><NavLink to="/result" className={({isActive}) => isActive ? 'active' : undefined}>Result</NavLink></li>
-            <li><NavLink to="/history" className={({isActive}) => isActive ? 'active' : undefined}>History</NavLink></li>
-            <li><NavLink to="/information" className={({isActive}) => isActive ? 'active' : undefined}>Information</NavLink></li>
-          </ul>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </div>
-      </nav>
+      {/* Reusable NavBar with dropdown + theme toggle */}
+      <NavBar theme={theme} setTheme={setTheme} />
 
       <div className="result-scroll">
         <button className="back-fab" onClick={() => navigate('/')}>← Back</button>
@@ -308,14 +293,14 @@ export default function Result() {
                   </div>
                 </div>
 
-                  {payload && typeof payload.csi === 'number' && (
+                {payload && typeof payload.csi === 'number' && (
                   <div className="classification-chip" style={{ marginTop: 8 }}>
                     <span className="chip-label">CSI Result:</span>
                     <span className="chip-value">
-                  {payload.csi_arch || '—'}{`  (${payload.csi.toFixed(1)}%)`}
+                      {payload.csi_arch || '—'}{`  (${payload.csi.toFixed(1)}%)`}
                     </span>
                   </div>
-                  )}
+                )}
 
                 {/* RIGHT: Report */}
                 <div className="result-card report-status">

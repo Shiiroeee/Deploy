@@ -53,12 +53,7 @@
   color: var(--fg);
 }
 
-/* Sticky navbar while results scroll underneath */
-.result-page .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 900;
-}
+/* NavBar is sticky in its own CSS; no overrides needed here */
 
 /* Links inside result page */
 .result-page a,
